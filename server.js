@@ -366,7 +366,7 @@ app.post('/upload', async (req, res) => {
     }
 
     let fileUploaded = [];
-    let excelFile = '';
+    let excelFile = [];
     
     // For each file in the request, move to upload folder and parse the data into JSON
     for (let key in req.files) {
@@ -384,7 +384,7 @@ app.post('/upload', async (req, res) => {
         }
         
         if (file.name.includes(".xlsx")) {
-            excelFile = file.name; 
+            excelFile.push(file); 
         }
         
         if(!file.name.includes(".xlsx")) {   
@@ -404,7 +404,7 @@ app.post('/upload', async (req, res) => {
         // If file successfully uploaded add to fileuploaded array
         fileUploaded.push(file.name);
     }
-    if (excelFile !== "") {
+    if (excelFile[0].name !== "") {
         // We have JSON of Python, now we need to create UMLTextFiles
 
         // Set datastorage to be previous JSON, as it resets each upload
