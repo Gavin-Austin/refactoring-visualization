@@ -408,6 +408,7 @@ app.post('/upload', async (req, res) => {
         // We have JSON of Python, now we need to create UMLTextFiles
 
         // Set datastorage to be previous JSON, as it resets each upload
+        const file = excelFile[0];
         const xlsxArray = await parseXLSX(uploadFolderLoc + `${file.name}`);
         const commandsAndTargets = await getCommandsAndTargets(xlsxArray);
         const todo = exeCommands(commandsAndTargets);
