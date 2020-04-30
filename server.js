@@ -252,20 +252,20 @@ const handleSpaceInFilePath = async filepath => {
         // Loop through each character in file path
         while (iter < filepath.length) {
             // If start of a new directory
-            if (filepath[iter] === "/" || filepath[iter] === "\\" ) {
-                const start = iter + 1
+            if (filepath[iter] == "/" || filepath[iter] == "\\" ) {
+                var start = iter + 1
                 var whitespacePresent = false;
 
                 // Determine if space in directory name, or move on if end of directory name
                 for (let j=iter;j<filepath.length;j++){
 
                     // If space set flag
-                    if (filepath[j+1] === " ") {
-                        whitespacePresent = true;
+                    if (filepath[j+1] == " ") {
+                        var whitespacePresent = true;
                     }
 
                     // if end of directory name
-                    if (filepath[j+1] === "/" || filepath[j+1] === "\\") {
+                    if (filepath[j+1] == "/" || filepath[j+1] == "\\") {
                         var end = j + 1;
                         break;
                     }
@@ -366,6 +366,7 @@ app.post('/upload', async (req, res) => {
     }
 
     let fileUploaded = [];
+    let excelFile = '';
     
     // For each file in the request, move to upload folder and parse the data into JSON
     for (let key in req.files) {
@@ -382,51 +383,60 @@ app.post('/upload', async (req, res) => {
             return res.status(500).send("Could not upload file.");
         }
         
+        if (file.name.includes(".xlsx")) {
+            excelFile = file.name; 
+        }
+        
         if(!file.name.includes(".xlsx")) {   
             // Create the json and uml files from the uploaded file.
             const filesCreated = createNeededFiles(uploadFolderLoc+`${file.name}`, file.name);
             await filesCreated;
             
             // Generate Image from uml text file using module PLANTUML
-            const umlTxtFile = `${__dirname}/client/src/upload/${file.name}_uml.txt`;
+            var umlTxtFile = `${__dirname}/client/src/upload/${file.name}_uml.txt`;
             const whiteSpaceHandled = await  handleSpaceInFilePath(umlTxtFile);
-            const umlImgGenerated = await generateUMLImage(whiteSpaceHandled.replace(/\\/g, "/"));
-
+            const umlImgGenerated = generateUMLImage(whiteSpaceHandled.replace(/\\/g, "/"));
+            await umlImgGenerated;
             // Move UML image generated to the public folder so we can render in our client	
             moveFileUsingPath(uploadFolderLoc +`${file.name}_uml.png`, './client/public/images');
-        } else {
-            // We have JSON of Python, now we need to create UMLTextFiles
-
-            // Set dataStorage to be previous JSON, as it resets each upload
-            const xlsxArray = await parseXLSX(uploadFolderLoc + `${file.name}`);
-            const commandsAndTargets = await getCommandsAndTargets(xlsxArray);
-            const todo = await exeCommands(commandsAndTargets);
-
-            // Create UML Text for each file in JSON and then image
-            for (let file in dataStorage) {
-                let data = dataStorage[file];
-
-                for (let item in data) {
-                    let temp = data[item][0].name.split('- ')[1];
-                    let fileName = temp.split(" ")[0];
-                    const umlAfterTxtGenerated = createUMLFile(data, uploadFolderLoc, `${fileName}_after`);
-                    await umlAfterTxtGenerated;
-
-                    // Create UML img
-                    const umlAfterTxtFile = `${__dirname}/client/src/upload/${fileName}_after_uml.txt`;
-                    const whiteSpaceHandled = await handleSpaceInFilePath(umlAfterTxtFile);
-                    await generateUMLImage(whiteSpaceHandled.replace(/\\/g, "/"));
-
-                    // Move file
-                    moveFileUsingPath(uploadFolderLoc +`${fileName}_after_uml.png`, './client/public/images');
-                }
-            }
         }
 
-        // If file successfully uploaded add to fileUploaded array
+        // If file successfully uploaded add to fileuploaded array
         fileUploaded.push(file.name);
     }
-    console.log("we ended files being uploaded");
+    if (excelFile !== "") {
+        // We have JSON of Python, now we need to create UMLTextFiles
+
+        // Set datastorage to be previous JSON, as it resets each upload
+        const xlsxArray = await parseXLSX(uploadFolderLoc + `${file.name}`);
+        const commandsAndTargets = await getCommandsAndTargets(xlsxArray);
+        const todo = exeCommands(commandsAndTargets);
+        await todo;
+
+        // Create UML Text for each file in JSON and then image
+        for (let file in dataStorage) {
+            let data = dataStorage[file];
+
+            for (let item in data) {
+                let temp = data[item][0].name.split('- ')[1];
+                let fileName = temp.split(" ")[0];
+                const umlAfterTxtGenerated = createUMLFile(data, uploadFolderLoc, `${fileName}_after`);
+                await umlAfterTxtGenerated;
+
+                // Create UML img
+                var umlAfterTxtFile = `${__dirname}/client/src/upload/${fileName}_after_uml.txt`;
+                const whiteSpaceHandled = await handleSpaceInFilePath(umlAfterTxtFile);
+                const umlImageAfterGenerated = generateUMLImage(whiteSpaceHandled.replace(/\\/g, "/"));
+                await umlImageAfterGenerated;
+
+                // Move file
+                moveFileUsingPath(uploadFolderLoc +`${fileName}_after_uml.png`, './client/public/images');
+            }
+        }
+        fileUploaded.push(file.name);
+    } else {
+        res.json("No excel file with commands were uploaded to server"); 
+    }
     
     createJSONFile(dataStorage, uploadFolderLoc, 'jsonData');
     
