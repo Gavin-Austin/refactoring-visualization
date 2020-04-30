@@ -7,10 +7,8 @@ const About = () => {
                 <h2>Usage Instructions:</h2>
                 <h5>
                     <li>
-                        Navigate to the <i>Home</i> page and upload the Python files of your project.
-                    </li>
-                    <li>
-                        Once the Java processes are finished running, upload the excel file containing the move commands.
+                        Navigate to the <i>Home</i> page and upload the Python files of your project and the excel
+                        file containing the move commands.
                     </li>
                     <li>
                         Once the Java processes are finished running, navigate to the <i>Refactoring</i> page to view
