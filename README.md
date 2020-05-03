@@ -4,7 +4,7 @@
 
 ## Authors: Gavin Austin, Jacob Weikert
 
-# Getting Started:
+# Getting Started
 
 **NOTE:** THIS ONLY WORKS WITH PYTHON FILES.
 
