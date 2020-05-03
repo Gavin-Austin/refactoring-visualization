@@ -8,21 +8,23 @@
 
 **NOTE:** THIS ONLY WORKS WITH PYTHON FILES.
 
-Node Version Used: NodeJS - 12.16.3
+**Node Version Used:** NodeJS - 12.16.3
 
-Node Package Manager (NPM) Used: NPM 6.14.4
+**Node Package Manager (NPM) Used:** NPM 6.14.4
 
-1. Clone the repo.
+1. Ensure that Java 8 and Graphviz (version 2.42.3) are installed.
 
-2. In terminal change directory to the folder you placed the application.
+2. Clone the repo.
 
-3. When in this directory execute the command "npm install".
+3. In terminal change directory to the folder you placed the application.
+
+4. When in this directory execute the command "npm install".
    This command will install all of the applications dependencies for the SERVER.
 
-4. Now change the current directory to the client folder and execute the command "npm install".
+5. Now change the current directory to the client folder and execute the command "npm install".
    This command will install all of the applications dependencies for the CLIENT.
 
-5. Navigate back to the applications folder and execute the command "npm run dev"
+6. Navigate back to the applications folder and execute the command "npm run dev"
    This command will run a script that starts the NodeJS server and the React client concurrently.
 
 # Running the Application
